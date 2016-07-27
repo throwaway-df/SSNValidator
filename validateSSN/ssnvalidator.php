@@ -18,6 +18,18 @@ class SSNValidator {
 
     }
 
+    $this->ssnDay = substr($uppercaseSSN, 0, 2);
+
+    $this->ssnMonth = substr($uppercaseSSN, 2, 2);
+
+    $this->ssnYear = substr($uppercaseSSN, 4, 2);
+
+    $this->ssnSeparator = substr($uppercaseSSN, 5, 1);
+
+    $this->ssnUnique = substr($uppercaseSSN, 6, 3);
+
+    $this->ssnHash = substr($uppercaseSSN, -1);
+
     return true;
 
   }
