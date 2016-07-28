@@ -11,39 +11,56 @@
   // SSNValidator class
   require_once('ssnvalidator.php');
 
-  $errorCode;
-  $errorText;
+  $errorCode = 0;
   $value = true;
 
   // Handle URL parameters
-  if(isset($_GET['ssn'])) {
+  if(isset($_GET)) {
 
-    $ssn = $_GET['ssn'];
+    foreach ($_GET as $key => $value)  {
+
+      if($key == 'ssn') {
+
+        $ssn = $_GET['ssn'];
+
+      } else {
+
+        $value = false;
+        break;
+
+      }
+
+    }
+
+  } else {
+
+    // Set value to false, set error and parse response
+    $value = false;
+    $errorCode = 404; // Bad Request
+
+  }
+
+  // Continue to validation if URL parameters were correct
+  if($value != false) {
+
+    // Start SSN Validation
 
     $ssnValidator = new SSNValidator($ssn);
 
-  } else {
+    if(!$ssnValidator->validateSSN()) {
+  
+      $value = false;
 
-    // Set value to false, set error and parse response
-    echo "Error";
-
-  }
-
-  // Start SSN Validation
-
-  if(!$ssnValidator->validateSSN()) {
-
-    // Set value to false, set error and parse response
-    echo "false";
-
-  } else {
-
-    echo "true";
+    }
 
   }
 
+  header('Content-Type: text/plain');
 
-
-
+  if($errorCode != 0) {
+    http_response_code($errorCode);
+  } else {
+    echo $value;
+  }
 
 ?>
