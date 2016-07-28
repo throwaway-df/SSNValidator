@@ -1,5 +1,9 @@
 <?php
 
+  // CORS
+  header('Access-Control-Allow-Origin: *');
+  header('Access-Control-Allow-Methods: GET');
+
   // SSNValidator class
   require_once('ssnvalidator.php');
 
@@ -17,6 +21,7 @@
   } else {
 
     // Set value to false, set error and parse response
+    echo "Error";
 
   }
 
@@ -24,7 +29,12 @@
 
   if(!$ssnValidator->parseSSN()) {
 
-    // Set value to false and parse response
+    // Set value to false, set error and parse response
+    echo "false";
+
+  } else {
+
+    echo "true";
 
   }
 
