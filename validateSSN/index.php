@@ -6,27 +6,60 @@
 
   // CORS
   header('Access-Control-Allow-Origin: *');
-  header('Access-Control-Allow-Methods: GET');
+  header('Access-Control-Allow-Methods: GET, POST');
 
   // SSNValidator class
   require_once('ssnvalidator.php');
 
+  $errorText = "";
   $errorCode = 0;
-  $value = true;
+  $valid = true;
+  $ssnFound = false;
 
   // Handle URL parameters
-  if(isset($_GET)) {
+  if(isset($_GET) || isset($_POST)) {
 
-    foreach ($_GET as $key => $value)  {
+    if(isset($_GET) && count($_GET) > 0) {
 
-      if($key == 'ssn') {
+      foreach ($_GET as $key => $value)  {
 
-        $ssn = $_GET['ssn'];
+        if($key == 'ssn') {
 
-      } else {
+          $ssn = $_GET['ssn'];
 
-        $value = false;
-        break;
+          $ssnFound = true;
+
+        } else {
+
+          // Set valid to false, set error and parse response
+          $valid = false;
+          $errorCode = 400; // Bad Request
+          $errorText = "Faulty parameters: only 'ssn' allowed";
+          break;
+
+        }
+
+      }
+
+    } else if(isset($_POST) && count($_POST) > 0) {
+
+      foreach ($_POST as $key => $value)  {
+
+        if($key == 'ssn') {
+
+          $ssn = $_POST['ssn'];
+
+          $ssnFound = true;
+
+        } else {
+
+          // Set valid to false, set error and parse response
+          $valid = false;
+          $errorCode = 400; // Bad Request
+          $errorText = "Faulty parameters: only 'ssn' allowed";
+          break;
+
+        }
 
       }
 
@@ -34,22 +67,30 @@
 
   } else {
 
-    // Set value to false, set error and parse response
-    $value = false;
-    $errorCode = 404; // Bad Request
+    // Set valid to false, set error and parse response
+    $valid = false;
+    $errorCode = 400; // Bad Request
+    $errorText = "Faulty parameters: parameter 'ssn' has to be supplied";
 
   }
 
+  if($ssnFound == false) {
+    // Set valid to false, set error and parse response
+    $valid = false;
+    $errorCode = 400; // Bad Request
+    $errorText = "Faulty parameters: parameter 'ssn' has to be supplied";
+  }
+
   // Continue to validation if URL parameters were correct
-  if($value != false) {
+  if($valid != false) {
 
     // Start SSN Validation
 
     $ssnValidator = new SSNValidator($ssn);
 
     if(!$ssnValidator->validateSSN()) {
-  
-      $value = false;
+
+      $valid = false;
 
     }
 
@@ -58,9 +99,10 @@
   header('Content-Type: text/plain');
 
   if($errorCode != 0) {
-    http_response_code($errorCode);
+    $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+    header($protocol . ' ' . $errorCode . ' ' . $errorText);
   } else {
-    echo $value;
+    echo var_export($valid, true);
   }
 
 ?>
