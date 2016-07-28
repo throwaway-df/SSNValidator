@@ -17,7 +17,7 @@ Download the repository as a `.zip` and extract the validateSSN folder into the 
 
 ## Usage:
 
-Make GET or POST requests to `http://location/validateSSN/` with URL parameter `ssn`.
+Make GET or POST requests to `http://location/validateSSN/` with a single `ssn` parameter.
 
 e.g. http://location/validateSSN/?ssn=010101A1234
 
