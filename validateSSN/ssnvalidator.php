@@ -55,7 +55,7 @@ class SSNValidator {
     $this->ssn = $ssn;
   }
 
-  private function validateSSN() {
+  public function validateSSN() {
 
     if(!$this->parseSSN() || !$this->validateSSNDate() || !$this->validateSSNUnique() || !$this->validateSSNHash()) {
       return false;
@@ -90,9 +90,9 @@ class SSNValidator {
 
     $this->ssnYear = substr($uppercaseSSN, 4, 2);
 
-    $this->ssnSeparator = substr($uppercaseSSN, 5, 1);
+    $this->ssnSeparator = substr($uppercaseSSN, 6, 1);
 
-    $this->ssnUnique = substr($uppercaseSSN, 6, 3);
+    $this->ssnUnique = substr($uppercaseSSN, 7, 3);
 
     $this->ssnHash = substr($uppercaseSSN, -1);
 
@@ -104,13 +104,13 @@ class SSNValidator {
 
 
     // Ignore leading zeroes
-    $ssnDay = intval($this->ssnDay);
+    $ssnDay = (int)$this->ssnDay;
 
     // Ignore leading zeroes
-    $ssnMonth = intval($this->ssnMonth);
+    $ssnMonth = (int)$this->ssnMonth;
 
     // Ignore leading zeroes
-    $ssnYear = intval($this->ssnYear);
+    $ssnYear = (int)$this->ssnYear;
 
     // Month validation
     if($ssnMonth < 1 || $ssnMonth > 12) {
@@ -157,7 +157,7 @@ class SSNValidator {
   private function validateSSNUnique() {
 
     // Ignore leading zeroes
-    $ssnUniqueInt = intval($this->ssnUnique);
+    $ssnUniqueInt = (int)$this->ssnUnique;
 
     // Finnish SSN has an unique identifier between 002 and 899
     if($ssnUniqueInt < 2 || $ssnUniqueInt > 899) {
@@ -170,9 +170,9 @@ class SSNValidator {
   private function validateSSNHash() {
 
     // Hash (calculated by appending the unique identifier to the date, dividing by 31 and comparing the remainder to a precalculated array of values)
-    $ssnHashParts = $this->ssnDay . $this->ssndMonth . $this->ssnYear . $this->ssnUnique;
+    $ssnHashParts = $this->ssnDay . $this->ssnMonth . $this->ssnYear . $this->ssnUnique;
 
-    $ssnHashPartsInt = intval($ssnHashParts);
+    $ssnHashPartsInt = (int)$ssnHashParts;
 
     $remainder = $ssnHashPartsInt % 31;
 
